@@ -26,7 +26,7 @@ import {
   X
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { allUnits, chapters, findUnit, REPO_BASE, type CourseChapter, type LessonUnit } from "./curriculum";
+import { allUnits, chapters, findUnit, REPO_BASE, REPO_ROOT, type CourseChapter, type LessonUnit } from "./curriculum";
 import { referenceFileByPath, referenceFiles, type ReferenceFile } from "./reference-files";
 
 const PROGRESS_KEY = "creator-agent-field-guide-deep-progress-v2";
@@ -149,8 +149,8 @@ function CodeViewer({ file, lessonFiles, chooseFile }: { file?: ReferenceFile; l
   return (
     <aside className="code-workspace" aria-label="Reference code workspace">
       <div className="workspace-titlebar">
-        <span><Code2 size={15} /> REFERENCE PROJECT</span>
-        <a href="https://github.com/porkytheblack/creator-agent-zero-to-hero/tree/main/reference/creator-agent-lab" target="_blank" rel="noreferrer" aria-label="Open reference application on GitHub"><ExternalLink size={15} /></a>
+        <span><Code2 size={15} /> SHARLET SOURCE</span>
+        <a href={REPO_ROOT} target="_blank" rel="noreferrer" aria-label="Open Sharlet on GitHub"><ExternalLink size={15} /></a>
       </div>
       <div className="workspace-body">
         <div className="file-explorer">
@@ -389,10 +389,10 @@ function CourseHome({ completed, openUnit }: { completed: Set<string>; openUnit:
         <div className="home-hero-copy">
           <span className="home-kicker">A CODE-REFERENCED LEARNING PATH</span>
           <h1>Understand the system.<br /><em>Then build it.</em></h1>
-          <p>This is a guided mental-model course, not a technology checklist. Follow one creator request through TypeScript, Effect, PostgreSQL, Glove, Foundry, research, media generation, approval, and production operations.</p>
+          <p>This is a guided mental-model course built against Sharlet’s complete public source. Follow one creator request through TypeScript, Effect, PostgreSQL, Glove, Foundry, research, media generation, approval, and production operations.</p>
           <div className="home-actions">
             <button type="button" onClick={() => openUnit(firstIncomplete.chapter.id, firstIncomplete.unit.id)}><Play size={16} fill="currentColor" /> {completed.size ? "Continue your path" : "Begin with the mental model"}</button>
-            <a href="https://github.com/porkytheblack/creator-agent-zero-to-hero/tree/main/reference/creator-agent-lab" target="_blank" rel="noreferrer">Open reference code <ExternalLink size={15} /></a>
+            <a href={REPO_ROOT} target="_blank" rel="noreferrer">Open the complete Sharlet codebase <ExternalLink size={15} /></a>
           </div>
           <div className="home-progress"><span><strong>{completed.size}</strong> of {allUnits.length} units</span><ProgressBar value={progress} label="Course progress" /><strong>{progress}%</strong></div>
         </div>
@@ -404,7 +404,7 @@ function CourseHome({ completed, openUnit }: { completed: Set<string>; openUnit:
 
       <section className="course-contract">
         <span>WHAT IS DIFFERENT NOW</span>
-        <div><article><strong>36 guided units</strong><p>Each unit teaches one mental model, shows how it connects, points to exact files, and ends with a build sequence.</p></article><article><strong>A real neutral codebase</strong><p>The public repository contains a Creator Agent Lab you can copy, inspect, and extend without using Sharlet’s private code.</p></article><article><strong>Recovery and production</strong><p>The course follows failures, retries, identity, cost, approval, testing, topology, and runbooks—not just the happy path.</p></article></div>
+        <div><article><strong>36 guided units</strong><p>Each unit teaches one mental model, shows how it connects, points to exact production files, and ends with a build sequence.</p></article><article><strong>The complete Sharlet source</strong><p>The public repository is the real product: runtime, web app, migrations, integrations, fixtures, tests, and operational boundaries.</p></article><article><strong>Recovery and production</strong><p>The course follows failures, retries, identity, cost, approval, testing, topology, and runbooks—not just the happy path.</p></article></div>
       </section>
 
       <section className="chapter-catalog">
@@ -509,7 +509,7 @@ export function App() {
         <button type="button" className="course-brand" onClick={() => { window.location.hash = ""; }}><span><GitBranch size={17} /></span><div><strong>CREATOR AGENT</strong><small>FIELD GUIDE</small></div></button>
         <div className="global-progress"><span>{completed.size}/{allUnits.length} units</span><ProgressBar value={progress} label="Overall course progress" /><strong>{progress}%</strong></div>
         <nav className="topbar-actions">
-          <a href="https://github.com/porkytheblack/creator-agent-zero-to-hero" target="_blank" rel="noreferrer"><GitBranch size={15} /> Repository</a>
+          <a href={REPO_ROOT} target="_blank" rel="noreferrer"><GitBranch size={15} /> Sharlet source</a>
           <button type="button" onClick={reset}><RotateCcw size={15} /> Reset</button>
           {selected ? <button type="button" onClick={() => setCodeOpen(!codeOpen)}>{codeOpen ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />} Code</button> : null}
         </nav>

@@ -2,7 +2,7 @@
 
 A free, public, code-guided course for content creators who want to understand and build autonomous AI agents without starting from a computer-science textbook.
 
-The course uses a fictional **creator agent lab**. It does not expose or copy Sharlet's private code. Instead, it teaches the architecture and decisions needed to build a similar class of product independently:
+The course uses the complete public [Sharlet codebase](https://github.com/porkytheblack/sharlet) as its production reference. Lessons explain the architecture and decisions first, then link directly to the files that implement them:
 
 - TypeScript, pnpm workspaces, and Turborepo
 - Effect services, Layers, schemas, and typed failures
@@ -56,17 +56,18 @@ Every unit includes:
 - checkpoints, a knowledge check, and an explain-back note; and
 - per-step and per-unit progress stored in the learner's browser.
 
-## Runnable reference lab
+## Public production reference
 
-The course points to a deliberately small, independent implementation at [`reference/creator-agent-lab`](reference/creator-agent-lab). This is teaching code—not Sharlet's private source—and includes the TypeScript monorepo skeleton, Effect service contracts and fixture Layers, Drizzle schema, Glove/Foundry agent definition, bounded research tools, specialists, schedules, and tests.
+Sharlet is public and intended to be read alongside the course. It contains the actual TypeScript monorepo, Effect integrations, Drizzle/PostgreSQL persistence, Glove/Foundry agent, bounded research tools, specialist definitions, schedules, web control surface, migrations, and tests.
 
 ```bash
-cd reference/creator-agent-lab
+git clone https://github.com/porkytheblack/sharlet.git
+cd sharlet
 pnpm install
 pnpm check
 ```
 
-The reference lab is credential-free and deterministic by default. Its tests use synthetic research observations. Live providers are an explicit later step.
+The checked-in tests and research fixtures are credential-free and deterministic. Live-provider smoke tests remain explicit, bounded later steps. The smaller [`reference/creator-agent-lab`](reference/creator-agent-lab) remains available as an optional scratch implementation, but the course links and embedded excerpts use Sharlet itself as the source of truth.
 
 Progress is stored in browser `localStorage`. The course has no backend, analytics, account system, or API keys.
 

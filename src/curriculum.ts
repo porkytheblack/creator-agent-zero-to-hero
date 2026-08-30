@@ -50,7 +50,8 @@ export type CourseChapter = {
   units: LessonUnit[];
 };
 
-export const REPO_BASE = "https://github.com/porkytheblack/creator-agent-zero-to-hero/blob/main/reference/creator-agent-lab";
+export const REPO_ROOT = "https://github.com/porkytheblack/sharlet";
+export const REPO_BASE = `${REPO_ROOT}/blob/main`;
 
 export const chapters: CourseChapter[] = ([
   {
@@ -96,14 +97,14 @@ export const chapters: CourseChapter[] = ([
           }
         ],
         files: [
-          { path: "docs/run-trace.md", reason: "This is the end-to-end spine for every chapter.", focus: "Read all twelve numbered steps before opening implementation files." },
+          { path: "docs/architecture/run-trace.md", reason: "This is the end-to-end spine for every chapter and links to each real owner.", focus: "Read the complete trace before opening implementation files." },
           { path: "README.md", reason: "It names the responsibility of each package without exposing a product-specific codebase." }
         ],
         steps: [
           { action: "Draw five boxes", detail: "Write Model, Agent loop, Tools, Durable state, Human interface. Put one sentence under each." },
           { action: "Trace one prompt", detail: "Use ‘Make tomorrow’s TikTok script’ and write what must happen before a trustworthy script exists." },
           { action: "Mark authority", detail: "Circle every place that can create, update, approve, spend, delete, or publish." },
-          { action: "Compare with the reference trace", detail: "Find the owner of each step in docs/run-trace.md. If you cannot name the owner, keep reading before coding." }
+          { action: "Compare with the Sharlet trace", detail: "Find the owner of each step in docs/architecture/run-trace.md. Follow its links into the real implementation before coding." }
         ],
         trace: ["Creator request", "Glove decides", "Validated tool executes", "Repository persists", "Model observes", "Human reviews"],
         checks: ["I can distinguish model output from application state", "I can name the owner of scheduling, reasoning, persistence, and approval", "I understand why missing tools are a stronger safety boundary than prompt wording"],
@@ -154,7 +155,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Put policy near the invariant", paragraphs: ["The exact-version approval check belongs at the publishing boundary and in durable records, not only in a system prompt. The maximum Apify spend belongs in the integration input. The creator-facing vocabulary belongs in a projection layer, not in database column names.", "Duplicated policy eventually disagrees. Prefer one authoritative check with tests, then let UI copy explain the result."] },
           { title: "Recognize orchestration", paragraphs: ["Orchestration coordinates several capabilities but should not absorb their implementation. ‘Collect evidence, rank it, create a version, request review’ is orchestration. HTTP parsing, SQL, and image bytes remain inside their services.", "Glove performs reasoning orchestration within a turn. Foundry performs temporal orchestration across instances, schedules, retries, and runs."] }
         ],
-        files: [{ path: "README.md", reason: "The architecture list is a responsibility map." }, { path: "docs/run-trace.md", reason: "Each numbered step should map to one owner." }],
+        files: [{ path: "README.md", reason: "The architecture list is a responsibility map." }, { path: "docs/architecture/run-trace.md", reason: "Each numbered step maps to its owning Sharlet file." }],
         steps: [
           { action: "Create a responsibility table", detail: "Columns: responsibility, owner package, input, output, failure, side effect." },
           { action: "Test dependency direction", detail: "For each package, list what it may import and what it must never import." },
@@ -185,7 +186,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Keep synthetic provenance visible", paragraphs: ["Use impossible or reserved URLs, deterministic times, and an explicit fixture marker in raw provenance. Never merge fixture and live evidence into a production strategy without a visible boundary.", "Fixtures should be small enough to understand. Add one case per behavior rather than exporting a giant provider dump with unknown licensing or private data."] },
           { title: "Test decisions, not snapshots alone", paragraphs: ["Assert that duplicates collapse, stale items score lower, malicious text remains data, source URLs survive, and unsupported rows fail or skip with a reason.", "A fixture suite becomes executable documentation for what your product considers evidence."] }
         ],
-        files: [{ path: "packages/integrations/src/research.ts", reason: "Fixture and live implementations share the Research contract." }, { path: "packages/domain/src/models.ts", reason: "The normalized output boundary." }],
+        files: [{ path: "packages/integrations/src/apify-fixtures.ts", reason: "Provider-shaped synthetic observations enter through the real acquisition boundary." }, { path: "packages/integrations/src/apify.ts", reason: "The production normalizer consumes both fixture and live payloads." }, { path: "packages/domain/src/models.ts", reason: "The provider-neutral output boundary." }],
         steps: [
           { action: "Create four provider-shaped rows", detail: "Use TikTok, Instagram, duplicate, and invalid/malicious examples." },
           { action: "Run production normalization", detail: "Do not construct domain rows directly in the seed." },
@@ -206,7 +207,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Bound every expensive dimension", paragraphs: ["Limit topics, actor items, pages, run duration, concurrency, retries, and maximum charge. Reject a request that cannot express a safe bound.", "Send tokens in authorization headers, never query strings or persisted actor input. Store a safe provider run ID and cost, not the credential."] },
           { title: "Fail honestly", paragraphs: ["Missing token, actor failure, timeout, invalid output, and budget breach should remain distinct. A broken provider is not ‘no trends today.’", "A live smoke test is intentionally small and may cost money. Keep it separate from CI and require an explicit credential and opt-in command."] }
         ],
-        files: [{ path: "packages/integrations/src/research.ts", reason: "Live Layer owns token, bounds, timeout, retry, and failure mapping." }, { path: ".env.example", reason: "Credential name without value." }],
+        files: [{ path: "packages/integrations/src/apify.ts", reason: "The real Effect client owns token transport, bounds, timeout, retry, normalization, and failure mapping." }, { path: ".env.example", reason: "Credential name without value." }],
         steps: [
           { action: "Select one actor and purpose", detail: "Document platform coverage, required input, output shape, and known cost model." },
           { action: "Add hard bounds", detail: "Five items, thirty seconds, two request retries, USD 0.05 ceiling for smoke verification." },
@@ -227,7 +228,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Deduplicate before strategy", paragraphs: ["Prefer stable external IDs within a platform. Fall back to canonical URLs or bounded content fingerprints when necessary. Record why rows merged when the decision is not obvious.", "A repeated viral clip across mirrors is evidence of distribution, not ten independent observations. Preserve source diversity separately."] },
           { title: "Make score components visible", paragraphs: ["Store component values or a score explanation. Likes alone bias toward account size and old content. Freshness alone overvalues noise.", "The UI should show ‘why it matters’ in creator language and retain the evidence details an operator can inspect."] }
         ],
-        files: [{ path: "packages/domain/src/models.ts", reason: "Normalized evidence shape." }, { path: "packages/database/src/schema.ts", reason: "Unique provider identity and provenance storage." }, { path: "apps/runtime/agents/creator/subagents.ts", reason: "Analyst ranks stored evidence and cites IDs." }],
+        files: [{ path: "packages/domain/src/models.ts", reason: "Normalized evidence shape." }, { path: "packages/database/src/schema.ts", reason: "Unique provider identity and provenance storage." }, { path: "apps/runtime/agents/sharlet/subagents.ts", reason: "The production analyst ranks stored evidence and cites IDs." }],
         steps: [
           { action: "Write a normalization table", detail: "Provider field → domain field → transform → failure behavior." },
           { action: "Choose dedupe keys", detail: "External ID first, canonical URL second, explicit fallback last." },
@@ -280,7 +281,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Adapt by channel without cross-posting", paragraphs: ["Keep the strategic territory shared while changing pace, opening, framing, duration, text density, and call to action per channel.", "A skill can teach channel craft; the packet schema still keeps platform-specific outputs structurally separate and reviewable."] },
           { title: "Preserve review units", paragraphs: ["The creator should review one version as a coherent set. Changes produce a new version, not silent field mutation.", "Store model/provider metadata for generation, but the product’s primary view should show creator concepts and evidence—not internal pass IDs."] }
         ],
-        files: [{ path: "packages/domain/src/models.ts", reason: "ContentPacket is the aggregate; extend it with deliverables during the exercise." }, { path: "packages/agent/src/prompt.ts", reason: "The parent’s evidence and review rules." }, { path: "apps/runtime/agents/creator/subagents.ts", reason: "Strategy and review remain bounded specialist stages." }],
+        files: [{ path: "packages/domain/src/models.ts", reason: "CreativeProject and CreativeArtifact form the production aggregate." }, { path: "packages/agent/src/prompt.ts", reason: "The parent’s evidence and review rules." }, { path: "apps/runtime/agents/sharlet/subagents.ts", reason: "Strategy and review remain bounded specialist stages." }],
         steps: [
           { action: "Write a creative thesis", detail: "Audience tension + evidence + distinctive angle + visual world." },
           { action: "Derive deliverables", detail: "Script, timed shots, caption, storyboard, photo brief, and generation prompt." },
@@ -301,7 +302,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Treat reference identity carefully", paragraphs: ["When the source is a product or person, preserve geometry, marks, color, label text, and identity constraints. Record which references were actually sent.", "A style reference is not a license to copy protected work. Store source/consent metadata and design prompts around permitted attributes."] },
           { title: "Make failure partial, not catastrophic", paragraphs: ["Generation can time out or be rejected after the packet is complete. Persist a failed artifact attempt and let the creator retry or choose another direction.", "Use provider idempotency/request IDs when available. Bound retries and costs; never regenerate endlessly inside a scheduled run."] }
         ],
-        files: [{ path: "packages/integrations/src/research.ts", reason: "Reuse the same Effect adapter pattern for an ImageProvider service." }, { path: "packages/database/src/schema.ts", reason: "Add media assets and generation lineage linked to contentVersions." }],
+        files: [{ path: "packages/integrations/src/openrouter-images.ts", reason: "Sharlet’s real Effect image boundary handles reference bytes, timeout, retry, and typed failures." }, { path: "packages/database/src/schema.ts", reason: "Media assets and generation lineage are durable records." }],
         steps: [
           { action: "Define ImageRequest", detail: "Include version ID, prompt, aspect ratio, reference IDs, and constraints." },
           { action: "Resolve selected assets", detail: "Authorize workspace ownership before reading bytes." },
@@ -332,7 +333,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Define transitions as operations", paragraphs: ["submitForReview(versionId), approveVersion(versionId, actor), rejectVersion, and publishApprovedVersion are clearer than updateStatus(any string). Each operation validates current state and required records.", "Terminal and retryable failures should be visible. Do not leave a run in running forever after process loss; use leases, heartbeat/claim expiry, and reconciliation."] },
           { title: "Design compensation consciously", paragraphs: ["Not every external side effect is transactional with PostgreSQL. Record intent before the call, provider request ID after acceptance, and reconcile uncertain results.", "Avoid deleting useful partial work. A failed image, reviewer refusal, or provider timeout can remain an operator-visible step with a retry action."] }
         ],
-        files: [{ path: "packages/database/src/schema.ts", reason: "Run, packet, version, and approval records have different lifecycles." }, { path: "docs/run-trace.md", reason: "Compare operational completion with product outcomes." }],
+        files: [{ path: "packages/database/src/schema.ts", reason: "Run, packet, version, and approval records have different lifecycles." }, { path: "docs/architecture/run-trace.md", reason: "Compare operational completion with product outcomes." }],
         steps: [
           { action: "Draw four state machines", detail: "Run, packet, artifact attempt, and approval." },
           { action: "Name transition owners", detail: "Agent, repository, human reviewer, publisher, reconciler." },
@@ -375,7 +376,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Bound cost as data", paragraphs: ["Track provider, operation, estimated/actual cost, workspace, run, and budget window. Enforce per-call and cumulative limits before expensive requests.", "Retries consume budget. Scheduled concurrency and creator-configured cadence can multiply spend, so model worst-case totals rather than average happy paths."] },
           { title: "Minimize what crosses boundaries", paragraphs: ["Redact logs and events. Use safe URLs and block arbitrary internal network fetches. Validate archives and media parsers. Avoid giving the model unnecessary private assets or raw account data.", "Secrets remain runtime-only. If a credential leaks, rotate it and audit history; removing the current file does not erase Git history."] }
         ],
-        files: [{ path: ".env.example", reason: "Secrets are named but never stored." }, { path: "packages/integrations/src/research.ts", reason: "Authorization and spend bounds live at provider boundary." }, { path: "packages/database/src/repositories.ts", reason: "Tenant-scoped use-case contracts." }],
+        files: [{ path: ".env.example", reason: "Secrets are named but never stored." }, { path: "packages/integrations/src/apify.ts", reason: "Authorization and spend bounds live at the real provider boundary." }, { path: "packages/database/src/repositories.ts", reason: "Workspace-scoped use-case contracts." }],
         steps: [
           { action: "Threat-model one run", detail: "List attacker input, authority boundaries, sensitive data, spend, and egress." },
           { action: "Calculate worst-case cost", detail: "Schedules × concurrency × run retries × request retries × per-call ceiling." },
@@ -406,7 +407,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Center one daily action", paragraphs: ["Today should answer: what is next, what did the agent find, what needs review, and what can I do now? ‘Create today’s content’ is more useful than a grid of runtime metrics.", "Optional one-off direction applies to one run and does not silently overwrite the durable creator routine."] },
           { title: "Design review as a workspace", paragraphs: ["Show one deliverable at a time with easy switches for script, shots, caption, storyboard, and frame. Keep evidence and reference assets adjacent.", "Approve the exact visible version. Requesting changes creates a new draft cycle and removes publish eligibility until new approval."] }
         ],
-        files: [{ path: "apps/web/src/today.ts", reason: "A creator-facing projection with no provider tokens or runtime leases." }, { path: "packages/domain/src/models.ts", reason: "The UI consumes product language." }],
+        files: [{ path: "apps/web/src/components/operator-console.tsx", reason: "Sharlet’s creator-facing console turns runtime state into Today, Trends, Media, Content, and Brand Kit." }, { path: "packages/domain/src/models.ts", reason: "The UI consumes product language." }],
         steps: [
           { action: "Write five user questions", detail: "What happens next? What changed? What needs me? What was used? Is anything stuck?" },
           { action: "Build TodayView", detail: "Project only the data needed to answer those questions." },
@@ -421,13 +422,13 @@ export const chapters: CourseChapter[] = ([
         title: "Test boundaries and the complete flow",
         duration: "110 min",
         promise: "You will build a test pyramid that proves domain rules, adapters, tools, autonomy, and approval.",
-        mentalModel: { plain: "Rehearse department moves separately, then run the whole production with marked props before paying for a live location.", technical: "Pure unit tests cover transformations and invariants. Layer tests cover services/repositories. Contract tests cover provider shapes. Integration tests cover PostgreSQL. E2E tests cover a fixture run through review. Bounded smoke tests verify live providers separately.", connection: "The neutral lab’s fixture Layer enables deterministic end-to-end runs; production smoke checks reuse the same normalizer and repositories." },
+        mentalModel: { plain: "Rehearse department moves separately, then run the whole production with marked props before paying for a live location.", technical: "Pure unit tests cover transformations and invariants. Contract tests cover provider shapes. Integration tests cover PostgreSQL and Foundry claims. End-to-end fixture runs cover research through review. Bounded smoke tests verify live providers separately.", connection: "Sharlet’s checked-in Apify fixtures enter through the production HTTP and normalization boundary; live smoke checks reuse the same client and repositories." },
         sections: [
           { title: "Test the risks first", paragraphs: ["Highest-value tests include dedupe, tenant isolation, idempotent schedule retry, evidence provenance, subagent handoff completeness, exact-version approval, missing credential failure, and generated-asset lineage.", "Snapshotting large model prose is fragile and rarely proves the safety boundary. Assert structured outputs and persisted effects."] },
           { title: "Use deterministic model/provider seams", paragraphs: ["For workflow tests, replace the model or assert tool-level orchestration with deterministic responses. Replace Apify and image providers with fixture Layers that still pass through validation and persistence.", "Do not let CI spend provider credits or depend on internet volatility. Live smoke commands are opt-in and hard-bounded."] },
           { title: "Test recovery, not only success", paragraphs: ["Crash after evidence save, retry the same run key, and prove one packet. Fail image generation and prove text remains. Attempt cross-tenant access and prove denial. Approve v3, edit to v4, and prove publish denial.", "These tests teach architecture because each failure identifies the boundary responsible for recovery."] }
         ],
-        files: [{ path: "packages/integrations/src/research.ts", reason: "Fixture Layer and live Layer share the contract." }, { path: "packages/database/src/schema.ts", reason: "Constraints make concurrency tests meaningful." }, { path: "docs/run-trace.md", reason: "Convert every transition into success and failure scenarios." }],
+        files: [{ path: "packages/integrations/src/apify.test.ts", reason: "Fixture payloads exercise the real acquisition and normalization boundary." }, { path: "packages/database/src/schema.ts", reason: "Constraints make concurrency tests meaningful." }, { path: "docs/architecture/run-trace.md", reason: "Convert every transition into success and failure scenarios." }],
         steps: [
           { action: "Write the risk matrix", detail: "Risk, owner, test level, fixture, expected record." },
           { action: "Add pure tests", detail: "Normalization, scoring, state transitions, packet validation." },
@@ -481,7 +482,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Design for tenancy", paragraphs: ["Every creator-owned record belongs to a workspace. A model-supplied workspace ID is not authorization; repositories scope queries with the authenticated workspace and reject cross-tenant identifiers.", "Indexes and unique constraints must include the right tenant or provider identity fields. A globally unique UUID helps identity but does not replace access checks."] },
           { title: "Design for provenance", paragraphs: ["Evidence needs observed time, source URL, external identity, normalization version, and raw payload. Generated assets need prompt, model, provider request ID, cost, and source asset IDs.", "Provenance is not optional logging. It is product data that supports explanation, reprocessing, dispute resolution, and creative iteration."] }
         ],
-        files: [{ path: "packages/database/src/schema.ts", reason: "Workspace, evidence, packet, version, approval, and run records." }, { path: "docs/run-trace.md", reason: "The restart question at each transition." }],
+        files: [{ path: "packages/database/src/schema.ts", reason: "Workspace, evidence, packet, version, approval, and run records." }, { path: "docs/architecture/run-trace.md", reason: "The restart question at each transition." }],
         steps: [
           { action: "Run the restart test on paper", detail: "For each trace step, ask what record proves it happened." },
           { action: "Add workspace ownership", detail: "Mark every creator-owned table and repository input." },
@@ -554,7 +555,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Tool data returns observations", paragraphs: ["A successful result should state what software actually observed or changed: saved 5 signals with IDs, not ‘research complete’ if nothing was persisted.", "Errors return typed, safe messages. The model may adapt its plan, but it should not reinterpret a failed mutation as success."] },
           { title: "Limits are part of correctness", paragraphs: ["maxTurns, maxRetries, consecutive-error limits, abort signals, context limits, and tool timeouts stop runaway loops. They need operator-visible failure states so work does not disappear.", "Glove context compaction summarizes old conversation for the model while the durable store can retain full history. Preserve evidence IDs, content versions, approvals, and pending work in compaction instructions."] }
         ],
-        files: [{ path: "apps/runtime/agents/creator/agent.ts", reason: "The complete Glove/Foundry agent definition and limits." }, { path: "packages/agent/src/prompt.ts", reason: "Permanent identity and non-negotiable rules." }],
+        files: [{ path: "apps/runtime/agents/sharlet/agent.ts", reason: "The complete production Glove/Foundry agent definition, schedules, guards, and limits." }, { path: "packages/agent/src/prompt.ts", reason: "Permanent identity and non-negotiable rules." }],
         steps: [
           { action: "Narrate a turn", detail: "User → model → tool request → validation → software → result → model." },
           { action: "Classify failures", detail: "Unknown tool, invalid input, provider failure, repository failure, and max-turn stop." },
@@ -576,7 +577,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Separate read and write authority", paragraphs: ["read_research and harvest_research are different capabilities. A read should not unexpectedly spend provider credits. A generation tool should not publish.", "Permission can depend on input. Reads may be automatic while writes, spending, deletion, or publishing require explicit policy and cached consent scoped to tool plus input."] },
           { title: "Keep model and UI data distinct", paragraphs: ["Glove tool data is sent back to the model. renderData is client-only and can support a rich history renderer without bloating model context.", "Do not place raw binary media, long provider payloads, or private user data in model-visible data. Persist them and return safe IDs and summaries."] }
         ],
-        files: [{ path: "apps/runtime/agents/creator/tools/research.tool.ts", reason: "Two narrow tools with constrained inputs and Effect implementations." }, { path: "packages/database/src/repositories.ts", reason: "Tools call use cases rather than queries." }],
+        files: [{ path: "apps/runtime/agents/sharlet/tools/research.tool.ts", reason: "Sharlet’s narrow research tools constrain input and call Effect-backed use cases." }, { path: "packages/database/src/repositories.ts", reason: "Tools call use cases rather than queries." }],
         steps: [
           { action: "Write one-sentence contracts", detail: "Do this for read evidence, harvest research, save version, and request approval." },
           { action: "Constrain schemas", detail: "Add limits for topic count, evidence limit, aspect ratio, and IDs." },
@@ -597,7 +598,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Do not ask prompts to enforce physics", paragraphs: ["‘Never publish’ is useful instruction, but the hard boundary is no publish capability or a publisher that verifies exact approval. ‘Use this workspace ID’ is useful context, but repositories still scope tenant access.", "Layer instruction and enforcement. The prompt helps the model choose correctly; software makes dangerous wrong choices impossible or reviewable."] },
           { title: "Observe behavior, not hidden thought", paragraphs: ["Record model pass start/end, tool name, validated arguments after redaction, result status, token use, retry, run status, and artifact IDs. Do not expose private chain-of-thought or secrets.", "Tool-result summaries can replace old large payloads in model context while keeping full data in durable history. Instrument only tools whose payloads genuinely bloat context."] }
         ],
-        files: [{ path: "packages/agent/src/prompt.ts", reason: "Small permanent operating contract." }, { path: "apps/runtime/agents/creator/agent.ts", reason: "Runtime limits and compaction policy." }],
+        files: [{ path: "packages/agent/src/prompt.ts", reason: "Small permanent operating contract." }, { path: "apps/runtime/agents/sharlet/agent.ts", reason: "Runtime limits, compaction policy, and deterministic completion guards." }],
         steps: [
           { action: "Highlight prompt categories", detail: "Mark identity, evidence, tool behavior, safety, and stopping conditions." },
           { action: "Move one fact", detail: "Take a mutable creator preference out of the prompt and put it in stored context." },
@@ -628,7 +629,7 @@ export const chapters: CourseChapter[] = ([
           { title: "One instance can have many conversations", paragraphs: ["A scheduled morning workflow, an operator chat, and a review follow-up may use separate conversations while sharing the same workspace and creator context.", "Conversation history supports reasoning continuity. Workspace entries, tasks, inboxes, schedules, and product repositories support shared operational continuity."] },
           { title: "Runs are operational facts", paragraphs: ["A run has source, status, attempts, timings, events, and result. It may be direct, scheduled, inbound, or background. The application can inspect a failed run without parsing the final assistant response.", "Foundry data adapters own durable instances, runs, claims, schedules, and related runtime state. Development memory adapters are not production durability."] }
         ],
-        files: [{ path: "apps/runtime/agents/creator/agent.ts", reason: "A file-routed agent definition." }, { path: "apps/runtime/foundry.application.ts", reason: "Application-level data adapter selection." }, { path: "docs/run-trace.md", reason: "One schedule-created run across the complete system." }],
+        files: [{ path: "apps/runtime/agents/sharlet/agent.ts", reason: "Sharlet’s file-routed production definition." }, { path: "apps/runtime/foundry.application.ts", reason: "Application-level PostgreSQL/PGlite data adapter selection." }, { path: "docs/architecture/run-trace.md", reason: "One schedule-created run across the complete system." }],
         steps: [
           { action: "Draw four identities", detail: "Definition route, instance ID, conversation ID, and run ID." },
           { action: "Change definition text on paper", detail: "Explain which IDs remain and which future behavior changes." },
@@ -649,7 +650,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Build an idempotency key", paragraphs: ["A key such as routineId:scheduledFor identifies the intended business run. Create or claim it under a unique constraint before acquiring evidence or generating assets.", "Retries load the existing record and continue or return the completed result. They do not create a new packet merely because the runtime attempt ID changed."] },
           { title: "Avoid retry multiplication", paragraphs: ["If HTTP retries three times and Foundry retries the run three times, the provider could see nine attempts. Document limits and make expensive operations idempotent with provider request keys when available.", "Classify permanent failures such as missing credential or invalid input so they alert instead of consuming the full retry budget."] }
         ],
-        files: [{ path: "apps/runtime/agents/creator/agent.ts", reason: "The creator-morning-loop schedule is code selected for an instance." }, { path: "packages/database/src/schema.ts", reason: "runs.runKey is a unique business identity." }],
+        files: [{ path: "apps/runtime/agents/sharlet/agent.ts", reason: "The creator-morning-studio schedule is derived from the saved creator program." }, { path: "packages/database/src/schema.ts", reason: "Durable run identities and schedule activations prevent accidental duplication." }],
         steps: [
           { action: "Model CreatorRoutine", detail: "Include timezone, cadence, topics, platforms, and expected outputs." },
           { action: "Derive scheduledFor", detail: "Use the creator timezone and preserve the UTC instant." },
@@ -722,7 +723,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Make handoffs complete", paragraphs: ["Subagents do not inherit parent context. Include exact workspaceId, task, inputs, constraints, required output format, and stopping condition.", "When chaining strategist to reviewer, copy the full draft. A summary such as ‘review what the strategist wrote’ gives the reviewer nothing to inspect."] },
           { title: "Keep persistence ownership singular", paragraphs: ["If both strategist and parent can persist, retries can create duplicates and reviewers can mutate content before sign-off. Let specialists propose or critique; let the parent perform one idempotent persistence step.", "Durable subagents may retain role-specific history, but do not rely on hidden history for correctness. Each critical handoff should remain self-contained."] }
         ],
-        files: [{ path: "apps/runtime/agents/creator/subagents.ts", reason: "Two specialists with narrow tools and limits." }, { path: "apps/runtime/agents/creator/agent.ts", reason: "The parent’s handoff contract and single persistence ownership." }],
+        files: [{ path: "apps/runtime/agents/sharlet/subagents.ts", reason: "Three real specialists with narrow roles and limits." }, { path: "apps/runtime/agents/sharlet/agent.ts", reason: "The parent’s handoff contract and single persistence ownership." }],
         steps: [
           { action: "Write the analyst brief", detail: "Include workspace, evidence query, ranking rubric, and output schema." },
           { action: "Write the reviewer brief", detail: "Include full draft, evidence IDs, brand constraints, and exact-edit requirement." },
@@ -743,7 +744,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Require provenance", paragraphs: ["Every memory write should identify source, actor, timestamp, and optional rationale. Model-inferred facts should remain distinguishable from creator-authored facts.", "Entity merges, resource moves, and deleted episodes may require reconciliation across adapters. Plan explicit repair jobs rather than assuming automatic cascade."] },
           { title: "Delegate deep retrieval", paragraphs: ["Do not attach every entity, episodic, and resource tool to the main agent. Register lookup or recall subagents with the reader surface they need.", "Keep ambient context small because it enters every turn. Use it for user-controlled preferences, not entire campaign archives."] }
         ],
-        files: [{ path: "packages/database/src/repositories.ts", reason: "Authoritative product state remains explicit." }, { path: "apps/runtime/agents/creator/subagents.ts", reason: "The pattern for bounded retrieval specialists." }],
+        files: [{ path: "packages/database/src/repositories.ts", reason: "Authoritative product state remains explicit." }, { path: "apps/runtime/agents/sharlet/subagents.ts", reason: "The pattern for bounded retrieval specialists." }],
         steps: [
           { action: "Classify twenty memories", detail: "Entity, episode, resource, ambient context, or product record." },
           { action: "Add provenance", detail: "Write source, actor, timestamp, and note for each mutation." },
@@ -777,8 +778,8 @@ export const chapters: CourseChapter[] = ([
         files: [{ path: "README.md", reason: "The lab start sequence and reading order." }, { path: ".env.example", reason: "Names of required configuration without secret values." }],
         steps: [
           { action: "Verify the workbench", detail: "Run each command separately and read its output.", command: "node --version\npnpm --version\ngit --version\ndocker --version", expected: "Four version strings. Node must satisfy the repository engine range." },
-          { action: "Clone the public course repository", detail: "Work from your own copy if you plan to edit exercises.", command: "git clone https://github.com/porkytheblack/creator-agent-zero-to-hero.git\ncd creator-agent-zero-to-hero", expected: "git status reports branch main and a clean working tree." },
-          { action: "Copy the neutral lab", detail: "Keep the reference pristine and build in your own folder.", command: "cp -R reference/creator-agent-lab ../my-creator-agent\ncd ../my-creator-agent", expected: "pwd ends with my-creator-agent and package.json exists." },
+          { action: "Clone the public Sharlet repository", detail: "The course now uses the complete production codebase as its reference.", command: "git clone https://github.com/porkytheblack/sharlet.git\ncd sharlet", expected: "git status reports branch main and a clean working tree." },
+          { action: "Create a learning branch", detail: "Keep the public main branch as your comparison point while you work through exercises.", command: "git switch -c learner/creator-agent", expected: "git branch --show-current prints learner/creator-agent." },
           { action: "Create a checkpoint", detail: "Initialize the copied lab as your own repository and commit the starting point.", command: "git init\ngit add .\ngit commit -m \"Start creator agent lab\"" }
         ],
         checks: ["I check pwd before commands", "I can explain staged, committed, and pushed", "git status is clean", "No secret value appears in tracked files"],
@@ -795,7 +796,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Fail closed", paragraphs: ["Live integrations should return a named missing-token error. Do not silently return fixture data in production because the creator may mistake fabricated evidence for a live signal.", "Fixture mode should be selected explicitly and labeled in stored provenance. This lets the same normalization pipeline run without confusing synthetic and observed evidence."] },
           { title: "Minimize exposure", paragraphs: ["Read a secret once at the integration or application composition boundary. Do not pass it through domain objects, tool output, model-visible data, URLs, or database rows.", "Logs should identify a provider request by safe request ID and status, never by full authorization headers or unredacted payloads."] }
         ],
-        files: [{ path: ".env.example", reason: "A contract for configuration names, not a credential store." }, { path: "packages/integrations/src/research.ts", reason: "The live Layer reads APIFY_API_TOKEN at the provider boundary." }],
+        files: [{ path: ".env.example", reason: "A contract for configuration names, not a credential store." }, { path: "packages/integrations/src/apify.ts", reason: "The production client reads APIFY_API_TOKEN at the provider boundary." }],
         steps: [
           { action: "Create local configuration", detail: "Copy names, then add only disposable development values.", command: "cp .env.example .env" },
           { action: "Confirm Git ignores it", detail: "The secret file must not appear as untracked or staged.", command: "git status --short", expected: ".env is absent from output." },
@@ -890,7 +891,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Treat external text as quoted material", paragraphs: ["A scraped caption saying ‘ignore previous instructions’ is not special. It is a string from an untrusted source and must be clearly delimited in prompts or summarized through a retrieval layer.", "Never concatenate untrusted text into the system prompt as if it were policy. Store it as evidence and tell the model that evidence may contain attempts to redirect it."] },
           { title: "Preserve failure information", paragraphs: ["A parse failure should identify the boundary and safe context—not dump secrets. Typed failures let orchestration decide whether to retry, skip one row, alert a human, or stop the run.", "Returning an empty array for every failure hides the difference between no evidence and a broken provider, producing confident content from absence."] }
         ],
-        files: [{ path: "packages/domain/src/models.ts", reason: "Runtime shape definitions." }, { path: "packages/integrations/src/research.ts", reason: "The provider boundary maps failures into ResearchFailure." }],
+        files: [{ path: "packages/domain/src/models.ts", reason: "Runtime shape definitions." }, { path: "packages/integrations/src/apify.ts", reason: "The provider boundary maps failures into ApifyResearchError." }],
         steps: [
           { action: "List trust boundaries", detail: "Include forms, HTTP, model arguments, storage, uploads, and environment." },
           { action: "Add one malicious fixture", detail: "Put instruction-like text inside evidence and prove it remains data." },
@@ -942,7 +943,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Errors are part of the API", paragraphs: ["ResearchFailure distinguishes missing token, provider failure, invalid payload, and budget breach. Orchestration can retry provider timeouts but should not retry missing credentials forever.", "Tagged errors remain data. You can log safe fields, map them to UI messages, and test recovery without string matching thrown exceptions."] },
           { title: "Layers select implementations", paragraphs: ["The Research service is a contract. FixtureResearch and ApifyResearch are two Layers. The workflow asks for Research and does not contain an if fixture branch.", "Layer composition is where environment-specific choices belong. Keep it near the application/runtime boundary so core workflows remain deterministic and testable."] }
         ],
-        files: [{ path: "packages/integrations/src/research.ts", reason: "Research contract, typed failure, fixture Layer, and live Layer." }, { path: "packages/database/src/repositories.ts", reason: "Repository contracts are also Effect services." }],
+        files: [{ path: "packages/integrations/src/apify.ts", reason: "The Effect-native production acquisition boundary and typed failures." }, { path: "packages/database/src/repositories.ts", reason: "Repository operations remain Effect programs with typed failures." }],
         steps: [
           { action: "Read one type aloud", detail: "Say: succeeds with signals, fails with ResearchFailure, needs Research." },
           { action: "Switch Layers", detail: "Run the same workflow once with fixture research and once with the missing-token live Layer." },
@@ -963,7 +964,7 @@ export const chapters: CourseChapter[] = ([
           { title: "Place policies intentionally", paragraphs: ["Retry the HTTP request, not the entire content workflow, or a transient provider error may duplicate database writes. Use idempotent identities at save boundaries even when a retry is scoped correctly.", "Timeouts, concurrency, and budget limits belong close to the external operation they constrain. Foundry also owns run-level attempts, so document both layers to avoid retry multiplication."] },
           { title: "Keep orchestration readable", paragraphs: ["Effect.gen should read like the workflow: get services, collect signals, save signals, return the saved count. Extract complex scoring or mapping into named pure functions.", "A thin tool validates model input and calls the workflow. This makes the same workflow callable from a schedule, test, CLI, or HTTP handler."] }
         ],
-        files: [{ path: "apps/runtime/agents/creator/tools/research.tool.ts", reason: "A thin Foundry shared tool composes Research and EvidenceRepository." }, { path: "packages/integrations/src/research.ts", reason: "Timeout and retry stay at the provider boundary." }],
+        files: [{ path: "apps/runtime/agents/sharlet/tools/research.tool.ts", reason: "A thin Glove tool composes configured sources, the Apify client, and repositories." }, { path: "packages/integrations/src/apify.ts", reason: "Timeout and retry stay at the provider boundary." }],
         steps: [
           { action: "Trace requirements", detail: "List Research and EvidenceRepository before reading implementation." },
           { action: "Run with fixture Layers", detail: "Confirm deterministic output and no network call." },
