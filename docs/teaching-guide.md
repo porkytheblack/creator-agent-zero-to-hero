@@ -4,13 +4,20 @@ This course is designed for a capable creator who is new to software—not for s
 
 ## Recommended rhythm
 
-Use three 90-minute sessions per week:
+Use three 90-minute sessions per week and treat one unit—not one chapter—as the normal session boundary:
 
-1. **Learn for 25 minutes.** Read one section and say the creator analogy aloud.
-2. **Build for 45 minutes.** Type the code rather than pasting everything. Stop at the first unexpected result and explain it.
-3. **Teach back for 20 minutes.** Complete the checkpoint and write the explanation from memory.
+1. **Map for 20 minutes.** Read the mental model and trace this unit's input, responsibility, and output.
+2. **Read code for 20 minutes.** Open every named file in the embedded workspace and then in GitHub. Explain why that responsibility belongs there.
+3. **Build for 35 minutes.** Follow the guided steps in the neutral reference lab. Type the important lines instead of pasting everything.
+4. **Prove for 15 minutes.** Run the smallest check, answer the knowledge check, and write the explain-back note from memory.
 
-Take a full week for Effect, PostgreSQL, research, assets, and shipping. The learner should not mark a stage complete because the page has been read.
+Take a full week for Effect, PostgreSQL, research, assets, and shipping. The learner should not mark a unit complete because the page has been read. Completion means they can name the boundary, find its code, predict its failure mode, and show the relevant check passing.
+
+## The system-spine method
+
+Keep returning to one unchanging trace: schedule → Foundry run → Glove reasoning → tool → Effect service → repository → persisted evidence/version → creator UI → approval gate. Each chapter zooms into part of that trace. At the end of a unit, ask the learner to point one step upstream and one step downstream from the code they changed. This prevents isolated vocabulary from replacing a real mental model.
+
+The embedded code viewer contains selected excerpts for orientation. The GitHub link is the source of truth and the runnable lab is the place to make changes.
 
 ## How to handle errors
 

@@ -4,13 +4,13 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://creator-agent-field-guide.denv.chatgpt.site"),
   title: "Creator Agent Field Guide",
-  description: "A patient, hands-on course for content creators learning to build production AI agents from zero.",
+  description: "A 36-unit, code-guided course for content creators learning how production AI agents fit together from zero.",
   alternates: {
     canonical: "https://creator-agent-field-guide.denv.chatgpt.site"
   },
   openGraph: {
     title: "Creator Agent Field Guide",
-    description: "Build your first creator agent, from zero to production.",
+    description: "Understand every boundary, file, and runtime step in a production creator agent.",
     type: "website",
     url: "https://creator-agent-field-guide.denv.chatgpt.site",
     images: [
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Creator Agent Field Guide",
-    description: "Build your first creator agent, from zero to production.",
+    description: "Understand every boundary, file, and runtime step in a production creator agent.",
     images: ["https://creator-agent-field-guide.denv.chatgpt.site/og.png"]
   }
 };

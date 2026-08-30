@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "rootDir": ".", "outDir": "dist" },
+  "include": ["*.ts", "agents/**/*.ts", ".foundry/routes.d.ts"]
+}

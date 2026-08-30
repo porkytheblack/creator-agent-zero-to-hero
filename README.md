@@ -1,6 +1,6 @@
 # Creator Agent Field Guide
 
-A free, public, hands-on course for content creators who want to understand and build autonomous AI agents without starting from a computer-science textbook.
+A free, public, code-guided course for content creators who want to understand and build autonomous AI agents without starting from a computer-science textbook.
 
 The course uses a fictional **creator agent lab**. It does not expose or copy Sharlet's private code. Instead, it teaches the architecture and decisions needed to build a similar class of product independently:
 
@@ -23,35 +23,50 @@ pnpm install
 pnpm dev
 ```
 
-Open the URL Vite prints, normally `http://localhost:5173`.
+Open the local URL printed by Vinext.
 
 ## Verify a production build
 
 ```bash
 pnpm typecheck
 pnpm build
-pnpm preview
+pnpm start
 ```
 
 ## Course design
 
-The 13 stages move through five phases:
+The course contains **36 guided units across 12 chapters**. It begins with the complete system trace, then repeatedly zooms into one software boundary at a time:
 
-1. **Orient** — translate a creator routine into an agent system.
-2. **Foundation** — set up the workbench, learn useful TypeScript, create a monorepo, use Effect, and persist data in PostgreSQL.
-3. **Intelligence** — build the Glove loop, add skills and memory, research with Apify, and generate assets with lineage.
-4. **Autonomy** — schedule durable, idempotent runs and design the creator control surface.
-5. **Ship** — test, secure, deploy, and operate the capstone.
+1. creator routine → system boundaries;
+2. workbench → monorepo → domain language;
+3. Effect services → PostgreSQL/Drizzle persistence;
+4. Glove reasoning → Foundry runtime → bounded specialists;
+5. fixture-first Apify research → asset and generation lineage;
+6. durable schedules → exact-version approvals → creator UI;
+7. end-to-end verification → secure production operations.
 
-Every stage includes:
+Every unit includes:
 
-- a creator-world analogy;
-- explicit learning outcomes;
-- a slow, ordered build path;
-- runnable or illustrative code blocks;
-- common detours;
-- a completion checklist; and
-- a teach-back prompt saved only in the learner's browser.
+- a plain-language and technical mental model;
+- a description of where the unit sits in the end-to-end flow;
+- three detailed explanations of responsibility and tradeoffs;
+- exact paths in the public reference repository;
+- ordered build steps with commands and expected results;
+- an embedded, line-numbered code workspace;
+- checkpoints, a knowledge check, and an explain-back note; and
+- per-step and per-unit progress stored in the learner's browser.
+
+## Runnable reference lab
+
+The course points to a deliberately small, independent implementation at [`reference/creator-agent-lab`](reference/creator-agent-lab). This is teaching code—not Sharlet's private source—and includes the TypeScript monorepo skeleton, Effect service contracts and fixture Layers, Drizzle schema, Glove/Foundry agent definition, bounded research tools, specialists, schedules, and tests.
+
+```bash
+cd reference/creator-agent-lab
+pnpm install
+pnpm check
+```
+
+The reference lab is credential-free and deterministic by default. Its tests use synthetic research observations. Live providers are an explicit later step.
 
 Progress is stored in browser `localStorage`. The course has no backend, analytics, account system, or API keys.
 

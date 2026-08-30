@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: creator_agent
+      POSTGRES_USER: creator
+      POSTGRES_PASSWORD: creator
+    ports:
+      - "5432:5432"
+    volumes:
+      - creator_agent_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U creator -d creator_agent"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  creator_agent_data:
