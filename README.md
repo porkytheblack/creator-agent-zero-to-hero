@@ -57,7 +57,7 @@ Progress is stored in browser `localStorage`. The course has no backend, analyti
 
 ## Publishing
 
-The included GitHub Actions workflow builds the Vite app and deploys `dist/` to GitHub Pages whenever `main` changes. In the repository settings, choose **GitHub Actions** as the Pages source.
+The public course is hosted with OpenAI Sites. The included GitHub Actions workflow type-checks and builds the exact source on every change to `main`.
 
 ## Teaching
 

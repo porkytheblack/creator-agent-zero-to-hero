@@ -43,6 +43,7 @@ const architectureStages: ArchitectureStage[] = [
 ];
 
 const readCompleted = () => {
+  if (typeof window === "undefined") return new Set<string>();
   try {
     return new Set<string>(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as string[]);
   } catch {
@@ -51,6 +52,7 @@ const readCompleted = () => {
 };
 
 const readHash = () => {
+  if (typeof window === "undefined") return "";
   const id = window.location.hash.replace(/^#\/?/, "");
   return modules.some((module) => module.id === id) ? id : "";
 };
@@ -193,7 +195,7 @@ function Lesson({ module, completed, toggleComplete, goTo }: {
   toggleComplete: () => void;
   goTo: (id: string) => void;
 }) {
-  const [note, setNote] = useState(() => localStorage.getItem(`${NOTE_PREFIX}${module.id}`) ?? "");
+  const [note, setNote] = useState("");
   const currentIndex = modules.findIndex((item) => item.id === module.id);
   const previous = modules[currentIndex - 1];
   const next = modules[currentIndex + 1];
@@ -317,8 +319,8 @@ function Glossary({ close }: { close: () => void }) {
 }
 
 export function App() {
-  const [completed, setCompleted] = useState<Set<string>>(() => readCompleted());
-  const [activeId, setActiveId] = useState(() => readHash());
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [activeId, setActiveId] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
   const progress = Math.round((completed.size / modules.length) * 100);
@@ -326,6 +328,8 @@ export function App() {
 
   useEffect(() => {
     const onHash = () => setActiveId(readHash());
+    setCompleted(readCompleted());
+    onHash();
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
