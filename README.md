@@ -35,7 +35,7 @@ pnpm start
 
 ## Course design
 
-The course contains **36 guided units across 12 chapters**. It begins with the complete system trace, then repeatedly zooms into one software boundary at a time:
+The course contains **37 guided units across 12 chapters**. It begins with the complete system trace, then repeatedly zooms into one software boundary at a time and ends with a learner-facing capstone:
 
 1. creator routine → system boundaries;
 2. workbench → monorepo → domain language;
@@ -51,10 +51,10 @@ Every unit includes:
 - a description of where the unit sits in the end-to-end flow;
 - three detailed explanations of responsibility and tradeoffs;
 - exact paths in the public reference repository;
-- ordered build steps with commands and expected results;
+- ordered learning activities, with executable commands and expected results whenever the unit changes or verifies code;
 - an embedded, line-numbered code workspace;
 - checkpoints, a knowledge check, and an explain-back note; and
-- per-step and per-unit progress stored in the learner's browser.
+- per-step and per-unit progress stored in the learner's browser; unit completion requires every activity, a passed knowledge check, and an explain-back note.
 
 ## Public production reference
 

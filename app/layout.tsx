@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://creator-agent-field-guide.denv.chatgpt.site"),
   title: "Creator Agent Field Guide",
-  description: "A 36-unit, code-guided course for content creators learning how production AI agents fit together from zero.",
+  description: "A 37-unit, code-guided course for content creators learning how production AI agents fit together from zero.",
   alternates: {
     canonical: "https://creator-agent-field-guide.denv.chatgpt.site"
   },

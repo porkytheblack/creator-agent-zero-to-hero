@@ -78,7 +78,12 @@ function CourseOutline({
   openUnit: (chapterId: string, unitId: string) => void;
   closeMobile?: () => void;
 }) {
-  const [openChapters, setOpenChapters] = useState<Set<string>>(() => new Set(chapters.map((chapter) => chapter.id)));
+  const [openChapters, setOpenChapters] = useState<Set<string>>(() => new Set([location?.chapterId ?? chapters[0]!.id]));
+
+  useEffect(() => {
+    if (!location?.chapterId) return;
+    setOpenChapters((current) => new Set(current).add(location.chapterId));
+  }, [location?.chapterId]);
 
   const toggleChapter = (id: string) => {
     setOpenChapters((current) => {
@@ -167,8 +172,9 @@ function CodeViewer({ file, lessonFiles, chooseFile }: { file?: ReferenceFile; l
               <span><FileCode2 size={13} /> {file.path}</span>
               <button type="button" onClick={copy}>{copied ? <Check size={13} /> : <Copy size={13} />} {copied ? "Copied" : "Copy"}</button>
             </div>
+            <div className="excerpt-notice"><strong>ABRIDGED TEACHING EXCERPT</strong><span>Use the linked GitHub file as the current source of truth.</span></div>
             <p className="file-purpose">{file.purpose}</p>
-            <pre className="line-code" aria-label={`Code from ${file.path}`}>
+            <pre className="line-code" aria-label={`Abridged teaching excerpt from ${file.path}`}>
               {file.code.split("\n").map((line, index) => (
                 <code key={`${index}-${line}`}><span>{String(index + 1).padStart(2, "0")}</span>{line || " "}</code>
               ))}
@@ -245,7 +251,7 @@ function Quiz({ unit, onPass }: { unit: LessonUnit; onPass: () => void }) {
         ))}
       </div>
       <button type="button" className="check-answer" disabled={choice === null} onClick={submit}>Check answer</button>
-      {checked ? <div className={correct ? "quiz-feedback is-correct" : "quiz-feedback is-wrong"}><strong>{correct ? "That’s it." : "Not yet."}</strong><p>{correct ? unit.quiz.explanation : "Re-read the mental model, then choose the answer that names the responsible software boundary."}</p></div> : null}
+      {checked ? <div className={correct ? "quiz-feedback is-correct" : "quiz-feedback is-wrong"}><strong>{correct ? "That’s it." : "Not yet."}</strong><p>{correct ? unit.quiz.explanation : `Use this principle to reconsider the choices: ${unit.quiz.explanation}`}</p></div> : null}
     </section>
   );
 }
@@ -277,6 +283,8 @@ function Lesson({
   const previous = allUnits[currentIndex - 1];
   const next = allUnits[currentIndex + 1];
   const [note, setNote] = useState("");
+  const explainBackReady = note.trim().length >= 80;
+  const readyToComplete = stepState.size === unit.steps.length && quizPassed && explainBackReady;
 
   useEffect(() => {
     setNote(localStorage.getItem(`${NOTE_KEY}${unitKey(chapter.id, unit.id)}`) ?? "");
@@ -359,16 +367,16 @@ function Lesson({
           <span className="lesson-eyebrow"><BookOpen size={15} /> EXPLAIN IT BACK</span>
           <h2>Connect this unit to the full run.</h2>
           <p>In your own words: what responsibility did this unit add, what does it depend on, what can fail, and what reads its output next?</p>
-          <textarea value={note} onChange={(event) => saveNote(event.target.value)} placeholder="Write as if you were explaining the system to another creator. Your note stays in this browser." />
-          <small>{note ? "Saved in this browser" : "Nothing is sent anywhere."}</small>
+          <textarea value={note} onChange={(event) => saveNote(event.target.value)} placeholder="Write at least 80 characters as if you were explaining the system to another creator. Your note stays in this browser." />
+          <small>{note ? `${note.trim().length}/80 characters · saved in this browser` : "Nothing is sent anywhere."}</small>
         </section>
 
         <section className="unit-completion">
           <div><strong>{stepState.size}/{unit.steps.length} build steps</strong><strong>{quizPassed ? "Knowledge check passed" : "Knowledge check pending"}</strong></div>
-          <button type="button" className={completed ? "finish-unit is-complete" : "finish-unit"} onClick={completeUnit}>
+          <button type="button" className={completed ? "finish-unit is-complete" : "finish-unit"} onClick={completeUnit} disabled={!completed && !readyToComplete}>
             {completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}{completed ? "Unit complete" : "Mark unit complete"}
           </button>
-          {!completed && (stepState.size < unit.steps.length || !quizPassed) ? <p>You can complete the unit at any time, but the build steps and knowledge check show what remains.</p> : null}
+          {!completed && !readyToComplete ? <p>Complete every guided step, pass the knowledge check, and write an 80-character explain-back before this unit can be completed.</p> : null}
         </section>
 
         <nav className="lesson-pagination" aria-label="Lesson navigation">
@@ -404,7 +412,7 @@ function CourseHome({ completed, openUnit }: { completed: Set<string>; openUnit:
 
       <section className="course-contract">
         <span>WHAT IS DIFFERENT NOW</span>
-        <div><article><strong>36 guided units</strong><p>Each unit teaches one mental model, shows how it connects, points to exact production files, and ends with a build sequence.</p></article><article><strong>The complete Sharlet source</strong><p>The public repository is the real product: runtime, web app, migrations, integrations, fixtures, tests, and operational boundaries.</p></article><article><strong>Recovery and production</strong><p>The course follows failures, retries, identity, cost, approval, testing, topology, and runbooks—not just the happy path.</p></article></div>
+        <div><article><strong>{allUnits.length} guided units</strong><p>Each unit teaches one mental model, shows how it connects, points to exact production files, and ends with a build sequence.</p></article><article><strong>The complete Sharlet source</strong><p>The public repository is the real product: runtime, web app, migrations, integrations, fixtures, tests, and operational boundaries.</p></article><article><strong>A proof-based capstone</strong><p>The final unit requires a healthy repository, deterministic evidence, durable invariants, and an explainable end-to-end run.</p></article></div>
       </section>
 
       <section className="chapter-catalog">

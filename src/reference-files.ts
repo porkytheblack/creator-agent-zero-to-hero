@@ -380,20 +380,29 @@ export default defineApplication({
     purpose: "The model sees a narrow Glove tool; the implementation coordinates configured sources, bounded concurrency, Effect integrations, and repositories.",
     code: `export const harvestResearchTool: GloveFoldArgs<{ workspaceId: string }> = {
   name: "harvest_research_sources",
-  description: "Run every active external research source and persist normalized observations.",
-  inputSchema: z.object({ workspaceId: z.string().min(1) }),
+  description: "Run every active external research source for this workspace and persist normalized observations.",
+  inputSchema: z.object({
+    workspaceId: z.string().min(1).describe("Foundry workspace id")
+  }),
   async do({ workspaceId }) {
     const program = Effect.gen(function* () {
       const sources = yield* listActiveResearchSources(workspaceId);
-      const client = new ApifyResearchClient({
-        token: process.env.APIFY_API_TOKEN ?? ""
-      });
-      const results = yield* Effect.forEach(sources, (source) =>
-        client.harvest(toHarvestSource(source)).pipe(
+      const client = new ApifyResearchClient({ token: process.env.APIFY_API_TOKEN ?? "" });
+      const results = yield* Effect.forEach(sources, (source) => {
+        const configuration = source.configuration;
+        return client.harvest({
+          actorId: source.externalRef,
+          input: configuration,
+          limit: typeof configuration.limit === "number" ? configuration.limit : 100,
+          maxChargeUsd: 0.25,
+          sourceLabel: source.label,
+          sourceKind: "web"
+        }).pipe(
           Effect.flatMap((rows) => saveObservations(workspaceId, source.id, rows)),
           Effect.catchAll((error) => Effect.succeed({ error: String(error) }))
-        ), { concurrency: 3 });
-      return summarize(results);
+        );
+      }, { concurrency: 3 });
+      return { sources: results.length, results };
     });
     const data = await Effect.runPromise(program);
     return { status: "success" as const, data, generateSummaryArgs: data };
