@@ -57,7 +57,7 @@ Progress is stored in browser `localStorage`. The course has no backend, analyti
 
 ## Publishing
 
-The public course is hosted with OpenAI Sites. The included GitHub Actions workflow type-checks and builds the exact source on every change to `main`.
+The public course is live at [creator-agent-field-guide.denv.chatgpt.site](https://creator-agent-field-guide.denv.chatgpt.site) and hosted with OpenAI Sites. The included GitHub Actions workflow type-checks and builds the exact source on every change to `main`.
 
 ## Teaching
 
